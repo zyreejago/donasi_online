@@ -6,10 +6,12 @@ use Illuminate\Support\Facades\Route;
 
 // Rute Auth (tanpa autentikasi)
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::match(['get', 'post'], '/login', [AuthController::class, 'login']);
+
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
  // User yang login bisa melakukan donasi
  Route::post('/donasi', [DonasiController::class, 'store']);
+ 
 
 // Rute yang membutuhkan autentikasi
 Route::middleware('auth:sanctum')->group(function () {
