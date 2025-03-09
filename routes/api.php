@@ -5,8 +5,8 @@ use App\Http\Controllers\DonasiController;
 use Illuminate\Support\Facades\Route;
 
 // Rute Auth (tanpa autentikasi)
-Route::post('/register', [AuthController::class, 'register']);
-Route::match(['get', 'post'], '/login', [AuthController::class, 'login']);
+// Route::post('/register', [AuthController::class, 'register']);
+// Route::match(['get', 'post'], '/login', [AuthController::class, 'login']);
 
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
  // User yang login bisa melakukan donasi

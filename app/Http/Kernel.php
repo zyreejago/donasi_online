@@ -30,10 +30,13 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Illuminate\Session\Middleware\AuthenticateSession::class,
+            
+
         ],
     
         'api' => [
-        \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         \Illuminate\Routing\Middleware\SubstituteBindings::class,
     ],
     ];

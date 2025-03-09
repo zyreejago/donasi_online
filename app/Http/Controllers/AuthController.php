@@ -1,77 +1,55 @@
 <?php
-
+ 
 namespace App\Http\Controllers;
-
+ 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-use Illuminate\Support\Facades\Password;
-
+ 
 class AuthController extends Controller
 {
-    // Register
-    public function register(Request $request)
+    public function register()
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
-
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => 'user' // Default sebagai user
-        ]);
-
-        return response()->json([
-            'message' => 'User berhasil didaftarkan!',
-            'user' => $user
-        ], 201);
+        return view('auth.register');
     }
-
-    // Login
-    public function login(Request $request)
+ 
+    public function registerPost(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string|min:6'
-        ]);
-
-        if (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+        $user = new User();
+ 
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+ 
+        $user->save();
+ 
+        return back()->with('success', 'Register successfully');
+    }
+ 
+    public function login()
+    {
+        return view('auth.login');
+    }
+ 
+    public function loginPost(Request $request)
+    {
+        $credetials = [
+            'email' => $request->email,
+            'password' => $request->password,
+        ];
+ 
+        if (Auth::attempt($credetials)) {
+            return redirect('dashboard')->with('success', 'Login Success');
         }
-
-        $user = Auth::user();
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Login berhasil!',
-            'user' => $user,
-            'token' => $token
-        ], 200);
+ 
+        return back()->with('error', 'Error Email or Password');
     }
-
-    // Logout
-    public function logout(Request $request)
+ 
+    public function logout()
     {
-        $request->user()->tokens()->delete();
-        return response()->json(['message' => 'Logout berhasil!'], 200);
-    }
-
-    // Lupa Password
-    public function forgotPassword(Request $request)
-    {
-        $request->validate(['email' => 'required|email']);
-
-        $status = Password::sendResetLink($request->only('email'));
-
-        return response()->json([
-            'message' => $status === Password::RESET_LINK_SENT
-                ? 'Link reset password telah dikirim ke email Anda.'
-                : 'Terjadi kesalahan.'
-        ], $status === Password::RESET_LINK_SENT ? 200 : 400);
+        Auth::logout();
+ 
+        return redirect()->route('login');
     }
 }
