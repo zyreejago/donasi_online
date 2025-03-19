@@ -16,11 +16,18 @@ class AuthController extends Controller
  
     public function registerPost(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+        ]);
+
         $user = new User();
  
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
+        $user->role = 'user'; // Default role adalah user
  
         $user->save();
  
@@ -34,13 +41,20 @@ class AuthController extends Controller
  
     public function loginPost(Request $request)
     {
-        $credetials = [
+        $credentials = [
             'email' => $request->email,
             'password' => $request->password,
         ];
  
-        if (Auth::attempt($credetials)) {
-            return redirect('dashboard')->with('success', 'Login Success');
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            
+            // Cek role user dan arahkan sesuai role
+            if (Auth::user()->role === 'admin') {
+                return redirect()->route('admin.dashboard')->with('success', 'Login Success');
+            } else {
+                return redirect()->route('dashboard')->with('success', 'Login Success');
+            }
         }
  
         return back()->with('error', 'Error Email or Password');
@@ -49,6 +63,9 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
+        
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
  
         return redirect()->route('login');
     }

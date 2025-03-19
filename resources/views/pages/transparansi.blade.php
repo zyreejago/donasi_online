@@ -164,7 +164,7 @@
     </div>
 
     <!-- Allocation Section -->
-    <div class="row mt-5">
+    {{-- <div class="row mt-5">
         <div class="col-12 mb-4">
             <h2 class="fw-bold">Alokasi Dana Donasi</h2>
             <p class="text-muted">Berikut adalah alokasi penggunaan dana donasi yang telah kami terima</p>
@@ -266,7 +266,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 </div>
 
 <!-- CTA Section -->
@@ -288,8 +288,49 @@
 
 @push('styles')
 <style>
+    /* Pagination Styling */
     .pagination {
         margin-bottom: 0;
+    }
+    
+    .pagination .page-item .page-link {
+        border-radius: 4px;
+        margin: 0 2px;
+        color: #333;
+        font-weight: 500;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    /* Next/Previous buttons styling */
+    .pagination .page-item .prev-link,
+    .pagination .page-item .next-link {
+        background-color: #f8f9fa;
+        color: #333;
+        font-weight: 600;
+        padding: 8px 16px;
+        border: 1px solid #dee2e6;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .pagination .page-item .prev-link:hover,
+    .pagination .page-item .next-link:hover {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+    
+    .pagination .page-item.disabled .prev-link,
+    .pagination .page-item.disabled .next-link {
+        color: #6c757d;
+        pointer-events: none;
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
     }
 </style>
 @endpush

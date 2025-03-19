@@ -25,7 +25,7 @@
                   </div>
                   @endif
                   
-                  <form action="{{ route('login') }}" method="POST">
+                  <form action="{{ route('login.post') }}" method="POST">
                       @csrf
                       <div class="mb-3">
                           <label for="email" class="form-label">Email</label>
@@ -63,7 +63,7 @@
                                   Ingat saya
                               </label>
                           </div>
-                          <a href="" class="text-primary">Lupa password?</a>
+                          <a href="{{ route('password.request') }}" class="text-primary">Lupa password?</a>
                       </div>
                       
                       <button type="submit" class="btn btn-primary w-100 py-2 mb-4">

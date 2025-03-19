@@ -89,7 +89,7 @@
 </div>
 
 <!-- Program Unggulan -->
-<div class="bg-light py-5">
+{{-- <div class="bg-light py-5">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="display-6 fw-bold">Program Unggulan</h2>
@@ -152,7 +152,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 
 <!-- Cara Berdonasi -->
 <div class="container py-5">

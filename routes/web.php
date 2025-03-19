@@ -1,11 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\DB;
-use App\Models\Donasi;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DonasiController;
+use App\Models\Donasi;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Controllers\HomeController;
 
 // ==============================
 // PUBLIC ROUTES (No Auth Required)
@@ -13,8 +14,12 @@ use App\Http\Controllers\AuthController;
 
 // Halaman Utama
 Route::get('/', function () {
-    return view('pages.landing');
-})->name('landing');
+    $kegiatan = \App\Models\Kegiatan::where('aktif', true)
+                ->orderBy('tanggal', 'desc')
+                ->take(3)
+                ->get();
+                return view('pages.landing', compact('kegiatan'));
+            })->name('landing');
 
 // Halaman Layanan
 Route::get('/layanan', function () {
@@ -59,11 +64,19 @@ Route::get('/transparansi', function () {
 Route::middleware('guest')->group(function () {
     // Register
     Route::get('/register', [AuthController::class, 'register'])->name('register');
-    Route::post('/register', [AuthController::class, 'registerPost']);
+    Route::post('/register', [AuthController::class, 'registerPost'])->name('register.post');
     
     // Login
     Route::get('/login', [AuthController::class, 'login'])->name('login');
-    Route::post('/login', [AuthController::class, 'loginPost']);
+    Route::post('/login', [AuthController::class, 'loginPost'])->name('login.post');
+    
+    // Password Reset Routes (dengan kode verifikasi)
+    Route::get('/forgot-password', [App\Http\Controllers\Auth\PasswordResetController::class, 'showRequestForm'])->name('password.request');
+    Route::post('/forgot-password', [App\Http\Controllers\Auth\PasswordResetController::class, 'sendCode'])->name('password.send.code');
+    Route::get('/verify-code', [App\Http\Controllers\Auth\PasswordResetController::class, 'showVerifyForm'])->name('password.verify');
+    Route::post('/verify-code', [App\Http\Controllers\Auth\PasswordResetController::class, 'verifyCode'])->name('password.verify.code');
+    Route::get('/reset-password', [App\Http\Controllers\Auth\PasswordResetController::class, 'showResetForm'])->name('password.reset.form');
+    Route::post('/reset-password', [App\Http\Controllers\Auth\PasswordResetController::class, 'resetPassword'])->name('password.reset.update');
 });
 
 // ==============================
@@ -72,11 +85,15 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     // Logout
-    Route::delete('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     
-    // Dashboard
+    // Dashboard - Hanya untuk user biasa (bukan admin)
     Route::get('/dashboard', function () {
+        // Redirect admin ke dashboard admin
+        if (Auth::user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+        
         $user = Auth::user();
         
         // Statistik donasi user
@@ -89,26 +106,28 @@ Route::middleware('auth')->group(function () {
         return view('pages.donasi', compact('user', 'totalDonasi', 'totalTerverifikasi', 'totalPending', 'totalJumlah'));
     })->name('dashboard');
     
-    // Donasi
-    Route::get('/donasi', function () {
-        return view('pages.donasi');
-    })->name('donasi');
-    
-    // Riwayat Donasi
-    Route::get('/riwayat', function () {
-        $user = Auth::user();
-        $donasis = Donasi::where('email', $user->email)
-                        ->orderBy('created_at', 'desc')
-                        ->paginate(10);
-                        
-        return view('pages.riwayat', compact('user', 'donasis'));
-    })->name('riwayat');
-    
-    // Profile
-    Route::get('/profile/edit', function () {
-        $user = Auth::user();
-        return view('pages.profile', compact('user'));
-    })->name('profile.edit');
+    // Donasi - Hanya untuk user biasa
+    Route::middleware('auth')->group(function () {
+        Route::get('/donasi', [DonasiController::class, 'index'])->name('donasi');
+        Route::post('/donasi', [DonasiController::class, 'store'])->name('donasi.store');
+        Route::get('/donasi/{id}', [DonasiController::class, 'show'])->name('donasi.show');
+        Route::post('/donasi/{id}/upload-bukti', [DonasiController::class, 'uploadBukti'])->name('donasi.upload-bukti');
+        
+        // Riwayat Donasi
+        Route::get('/riwayat', [DonasiController::class, 'riwayat'])->name('riwayat');
+
+        // Route untuk halaman kegiatan
+        // Route untuk halaman kegiatan
+Route::get('/kegiatan', [App\Http\Controllers\HomeController::class, 'allKegiatan'])->name('kegiatan.all');
+Route::get('/kegiatan/{id}', [App\Http\Controllers\HomeController::class, 'detailKegiatan'])->name('kegiatan.detail');
+
+        
+        // Profile
+        Route::get('/profile/edit', function () {
+            $user = Auth::user();
+            return view('pages.profile', compact('user'));
+        })->name('profile.edit');
+    });
     
     // API untuk mendapatkan riwayat donasi user
     Route::get('/api/donasi/user', function () {
@@ -125,74 +144,33 @@ Route::middleware('auth')->group(function () {
 // ==============================
 
 // API untuk donasi
-Route::post('/api/donasi', function (Illuminate\Http\Request $request) {
-    // Validasi request
-    $request->validate([
-        'nama_donatur' => 'required|string|max:255',
-        'email' => 'required|email',
-        'jenis_donasi' => 'required|string',
-        'metode_donasi' => 'required|string|in:uang,barang',
-        'jumlah' => 'required_if:metode_donasi,uang|nullable|numeric|min:1000',
-        'deskripsi_barang' => 'required_if:metode_donasi,barang|nullable|string',
-        'metode_pembayaran' => 'required|string',
-        'anonim' => 'nullable|boolean'
-    ]);
+Route::post('/api/donasi', [DonasiController::class, 'store']);
+
+
+
+
+Route::get('/kegiatan', [HomeController::class, 'allKegiatan'])->name('kegiatan.all');
+Route::get('/kegiatan/{id}', [HomeController::class, 'detailKegiatan'])->name('kegiatan.detail');
+
+
+// ==============================
+// ADMIN ROUTES
+// ==============================
+
+// Admin Routes
+Route::prefix('admin')->name('admin.')->middleware(['auth', AdminMiddleware::class])->group(function () {
+    // Dashboard
+    Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     
-    // Buat donasi baru
-    $donasi = new Donasi();
-    $donasi->nama_donatur = $request->anonim ? 'Hamba Allah' : $request->nama_donatur;
-    $donasi->email = $request->email;
-    $donasi->jenis_donasi = $request->jenis_donasi;
-    $donasi->metode_donasi = $request->metode_donasi;
+    // Donasi
+    Route::get('/donasi', [App\Http\Controllers\Admin\DonasiController::class, 'index'])->name('donasi.index');
+    Route::get('/donasi/{id}', [App\Http\Controllers\Admin\DonasiController::class, 'show'])->name('donasi.show');
+    Route::put('/donasi/{id}/status', [App\Http\Controllers\Admin\DonasiController::class, 'updateStatus'])->name('donasi.update-status');
+    Route::delete('/donasi/{id}', [App\Http\Controllers\Admin\DonasiController::class, 'destroy'])->name('donasi.destroy');
     
-    if ($request->metode_donasi === 'uang') {
-        $donasi->jumlah = $request->jumlah;
-    } else {
-        $donasi->deskripsi_barang = $request->deskripsi_barang;
-    }
-    
-    $donasi->metode_pembayaran = $request->metode_pembayaran;
-    $donasi->status = 'pending'; // Default status
-    $donasi->save();
-    
-    return response()->json([
-        'success' => true,
-        'message' => 'Donasi berhasil dikirim! Terima kasih atas kebaikan Anda.',
-        'data' => $donasi
-    ]);
+    // Settings
+    Route::get('/settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
+
+    Route::resource('kegiatan', App\Http\Controllers\Admin\KegiatanController::class);
 });
-
-// ==============================
-// DEBUG ROUTES (Development Only)
-// ==============================
-
-if (app()->environment('local')) {
-    Route::get('/cek-session', function () {
-        return [
-            'session_user_id' => session('user_id'),
-            'auth_user_id' => Auth::id(),
-            'session_all' => Session::all(),
-        ];
-    });
-
-    Route::get('/debug-session', function () {
-        return response()->json([
-            'auth_check' => Auth::check(),
-            'user' => Auth::user(),
-            'session_data' => session()->all(),
-        ]);
-    });
-
-    Route::get('/force-save-session', function () {
-        session(['test_key' => 'LaravelSessionTest']);
-        session()->save();
-
-        $session = DB::table('sessions')->where('id', session()->getId())->first();
-
-        return response()->json([
-            'session_id' => session()->getId(),
-            'session_data' => $session ? json_decode(base64_decode($session->payload), true) : null
-        ]);
-    });
-}
-

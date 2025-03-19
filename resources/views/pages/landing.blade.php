@@ -13,7 +13,6 @@
                     <div class="col-md-8 text-white position-relative">
                         <h1 class="display-4 fw-bold mb-4">Selamat Datang di Yayasan Kami</h1>
                         <p class="lead fs-4 mb-4">Bersama kita bisa membantu lebih banyak orang yang membutuhkan. Mari bergabung dalam misi kemanusiaan kami.</p>
-                        <div class="d-flex gap-3  Mari bergabung dalam misi kemanusiaan kami.</p>
                         <div class="d-flex gap-3">
                             <a href="{{ route('login') }}" class="btn btn-primary btn-lg px-4 py-3 fw-semibold">Donasi Sekarang</a>
                             <a href="#tentang-kami" class="btn btn-outline-light btn-lg px-4 py-3">Pelajari Lebih Lanjut</a>
@@ -122,6 +121,36 @@
         </div>
     </div>
 </div>
+
+<!-- Kegiatan Yayasan Section -->
+<section class="container my-5">
+    <h2 class="fw-bold text-center mb-4">Kegiatan Terbaru</h2>
+    <div class="row">
+        @forelse($kegiatan ??[] as $item)
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    @if($item->gambar)
+                        <img src="{{ asset('storage/images/kegiatan/' . $item->gambar) }}" class="card-img-top" alt="{{ $item->judul }}">
+                    @else
+                        <img src="https://via.placeholder.com/400x250?text={{ urlencode($item->judul) }}" class="card-img-top" alt="{{ $item->judul }}">
+                    @endif
+                    <div class="card-body">
+                        <h5 class="card-title">{{ $item->judul }}</h5>
+                        <p class="text-muted">{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</p>
+                        <p class="card-text">{{ Str::limit($item->deskripsi, 100) }}</p>
+                        <a href="{{ route('kegiatan.detail', $item->id) }}" class="btn btn-outline-primary">Selengkapnya</a>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <p class="text-center">Belum ada kegiatan.</p>
+        @endforelse
+    </div>
+    <div class="text-center mt-4">
+        <a href="{{ route('kegiatan.all') }}" class="btn btn-primary">Lihat Semua Kegiatan</a>
+    </div>
+</section>
+
 
 <!-- CTA Section -->
 <div class="bg-primary text-white py-5">
