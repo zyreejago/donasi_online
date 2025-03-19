@@ -55,7 +55,8 @@ class SettingController extends Controller
             
             $file = $request->file('qris_image');
             $filename = 'qris_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('public/settings', $filename);
+            $file->storeAs('settings', $filename, 'public');
+
             
             Setting::setValue('qris_image', $filename);
         }

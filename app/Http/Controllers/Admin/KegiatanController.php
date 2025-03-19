@@ -15,9 +15,10 @@ class KegiatanController extends Controller
      */
     public function index()
 {
-    $kegiatan = Kegiatan::where('aktif', 1)->orderBy('tanggal', 'desc')->get() ?? collect();
+    $kegiatan = Kegiatan::where('aktif', 1)->orderBy('tanggal', 'desc')->paginate(10);
     return view('admin.kegiatan.index', compact('kegiatan'));
 }
+
 
 
     /**
@@ -48,7 +49,8 @@ class KegiatanController extends Controller
         if ($request->hasFile('gambar')) {
             $gambar = $request->file('gambar');
             $namaFile = 'kegiatan-' . time() . '.' . $gambar->getClientOriginalExtension();
-            $gambar->storeAs('public/images/kegiatan', $namaFile);
+            $gambar->storeAs('images/kegiatan', $namaFile, 'public');
+
             $data['gambar'] = $namaFile;
         }
 
@@ -92,7 +94,8 @@ class KegiatanController extends Controller
             // Upload new image
             $gambar = $request->file('gambar');
             $namaFile = 'kegiatan-' . time() . '.' . $gambar->getClientOriginalExtension();
-            $gambar->storeAs('public/images/kegiatan', $namaFile);
+            $gambar->storeAs('images/kegiatan', $namaFile, 'public');
+
             $data['gambar'] = $namaFile;
         }
 

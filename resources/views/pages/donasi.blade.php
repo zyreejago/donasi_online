@@ -182,13 +182,24 @@
                             </div>
                             <div class="modal-body">
                                 <!-- QRIS Payment Section (for money donations) -->
+                                <!-- QRIS Payment Section (for money donations) -->
                                 <div id="qrisSection" class="d-none">
                                     <div class="text-center mb-4">
                                         <h6 class="fw-bold">Silahkan Scan QRIS di bawah ini</h6>
                                         <p class="text-muted small">Donasi akan diproses setelah Anda melakukan pembayaran</p>
                                         
                                         <div class="my-4">
-                                            <img src="{{ asset('images/qris-code.png') }}" alt="QRIS Code" class="img-fluid" style="max-width: 250px;">
+                                            @php
+                                                $qrisImage = \App\Models\Setting::getValue('qris_image');
+                                            @endphp
+                                            
+                                            @if($qrisImage)
+                                                <img src="{{ Storage::url('settings/' . $qrisImage) }}" alt="QRIS Code" class="img-fluid" style="max-width: 250px;">
+                                            @else
+                                                <div class="alert alert-warning">
+                                                    <i class="bi bi-exclamation-triangle me-2"></i> QRIS belum diatur. Silahkan hubungi admin.
+                                                </div>
+                                            @endif
                                         </div>
                                         
                                         <div class="alert alert-info">
@@ -206,11 +217,9 @@
                                     
                                     <div class="card border-0 bg-light">
                                         <div class="card-body p-4">
-                                            <h6 class="fw-bold">Yayasan Peduli Kasih</h6>
-                                            <p class="mb-2">Jl. Contoh No. 123, Kecamatan Contoh</p>
-                                            <p class="mb-2">Kota XYZ, Provinsi ABC</p>
-                                            <p class="mb-2">Kode Pos: 12345</p>
-                                            <p class="mb-0">Telepon: (021) 1234-5678</p>
+                                            <h6 class="fw-bold">{{ \App\Models\Setting::getValue('nama_lembaga', 'Yayasan Peduli Kasih') }}</h6>
+                                            <p class="mb-2">{!! nl2br(e(\App\Models\Setting::getValue('alamat_pengiriman', 'Alamat belum diatur'))) !!}</p>
+                                            <p class="mb-0">Telepon: {{ \App\Models\Setting::getValue('telepon', '-') }}</p>
                                         </div>
                                     </div>
                                     
@@ -269,43 +278,7 @@
             </div>
         </div>
         
-        <!-- Program Unggulan -->
-        {{-- <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3">
-                <h5 class="fw-bold mb-0">Program Unggulan</h5>
-            </div>
-            <div class="card-body p-0">
-                <div class="list-group list-group-flush">
-                    <a href="#" class="list-group-item list-group-item-action p-3">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1 fw-bold">Beasiswa Pendidikan</h6>
-                            <small class="text-primary">75%</small>
-                        </div>
-                        <div class="progress mt-2" style="height: 5px;">
-                            <div class="progress-bar bg-primary" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action p-3">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1 fw-bold">Layanan Kesehatan</h6>
-                            <small class="text-primary">60%</small>
-                        </div>
-                        <div class="progress mt-2" style="height: 5px;">
-                            <div class="progress-bar bg-primary" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action p-3">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1 fw-bold">Bantuan Pangan</h6>
-                            <small class="text-primary">85%</small>
-                        </div>
-                        <div class="progress mt-2" style="height: 5px;">
-                            <div class="progress-bar bg-primary" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div> --}}
+       
     </div>
 </div>
 
@@ -646,4 +619,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endpush
-

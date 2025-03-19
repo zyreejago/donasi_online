@@ -81,7 +81,8 @@ class DonasiController extends Controller
             
             $file = $request->file('bukti_pembayaran');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('public/bukti_pembayaran', $filename);
+            $file->storeAs('bukti_pembayaran', $filename, 'public');
+
             
             $donasi->bukti_pembayaran = $filename;
             $donasi->save();

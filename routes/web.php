@@ -29,7 +29,7 @@ Route::get('/layanan', function () {
 // Halaman Transparansi
 Route::get('/transparansi', function () {
     // Filter data
-    $query = Donasi::query();
+    $query = Donasi::where('status', 'terverifikasi'); // Hanya tampilkan yang terverifikasi
     
     if (request('jenis_donasi')) {
         $query->where('jenis_donasi', request('jenis_donasi'));
@@ -49,12 +49,23 @@ Route::get('/transparansi', function () {
     $totalDonasi = Donasi::count();
     $totalTerverifikasi = Donasi::where('status', 'terverifikasi')->count();
     $totalPending = Donasi::where('status', 'pending')->count();
+    
+    // Total jumlah dari semua donasi uang
     $totalJumlah = Donasi::where('metode_donasi', 'uang')->sum('jumlah');
     
-    // Ambil data donasi
-    $donasis = $query->orderBy('created_at', 'desc')->paginate(10);
+    // Total jumlah hanya dari donasi uang yang terverifikasi
+    $totalJumlahTerverifikasi = Donasi::where('metode_donasi', 'uang')
+                                      ->where('status', 'terverifikasi')
+                                      ->sum('jumlah');
     
-    return view('pages.transparansi', compact('donasis', 'totalDonasi', 'totalTerverifikasi', 'totalPending', 'totalJumlah'));
+    return view('pages.transparansi', [
+        'donasis' => $query->paginate(10),
+        'totalDonasi' => $totalDonasi,
+        'totalTerverifikasi' => $totalTerverifikasi,
+        'totalPending' => $totalPending,
+        'totalJumlah' => $totalJumlah,
+        'totalJumlahTerverifikasi' => $totalJumlahTerverifikasi
+    ]);
 })->name('transparansi');
 
 // ==============================
