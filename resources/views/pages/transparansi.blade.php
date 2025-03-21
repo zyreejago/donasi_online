@@ -11,9 +11,9 @@
                 <h1 class="display-4 fw-bold mb-4">Transparansi Donasi</h1>
                 <p class="lead mb-0">Kami berkomitmen untuk transparan dalam pengelolaan setiap donasi yang diterima. Berikut adalah laporan penggunaan dana donasi yang telah kami terima.</p>
             </div>
-            <div class="col-lg-6 d-none d-lg-block">
+            {{-- <div class="col-lg-6 d-none d-lg-block">
                 <img src="{{ asset('images/transparency.jpg') }}" alt="Transparansi Donasi" class="img-fluid rounded-4 shadow">
-            </div>
+            </div> --}}
         </div>
     </div>
 </div>

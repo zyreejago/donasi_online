@@ -6,7 +6,8 @@
 <!-- Hero Section with Background Image -->
 <div class="container-fluid px-0">
     <div class="hero-banner position-relative">
-        <div class="bg-image" style="background-image: url('{{ asset('images/hero-bg.jpg') }}'); height: 500px; background-size: cover; background-position: center; position: relative;">
+        <div class="bg-image" style="background-image: url('{{ asset('storage/images/kegiatan/hero-bg.jpg') }}'); height: 500px; background-size: cover; background-position: center; position: relative;">
+
             <div class="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6);"></div>
             <div class="container h-100">
                 <div class="row h-100 align-items-center">
@@ -23,6 +24,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Stats Counter Section -->
 <div class="bg-light py-5">
@@ -60,7 +62,7 @@
 <div id="tentang-kami" class="container py-5">
     <div class="row align-items-center">
         <div class="col-lg-6 mb-4 mb-lg-0">
-            <img src="{{ asset('images/about-us.jpg') }}" alt="Tentang Yayasan Kami" class="img-fluid rounded-4 shadow">
+            <img src="{{ asset('storage/images/kegiatan/about-us.jpg') }}" alt="Tentang Yayasan Kami" class="img-fluid rounded-4 shadow">
         </div>
         <div class="col-lg-6">
             <div class="ps-lg-4">

@@ -7,6 +7,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,7 +36,15 @@ class AppServiceProvider extends ServiceProvider
         Route::middleware('api')
             ->prefix('api')
             ->group(base_path('routes/api.php'));
+
+
     });
+    // Configure PDF
+    PDF::setOptions([
+        'defaultFont' => 'sans-serif',
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled' => true
+    ]);
 }
 
 

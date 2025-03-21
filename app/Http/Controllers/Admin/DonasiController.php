@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class DonasiController extends Controller
 {
@@ -102,5 +104,50 @@ class DonasiController extends Controller
         
         return redirect()->route('admin.donasi.index')
                         ->with('success', 'Donasi berhasil dihapus');
+    }
+    public function generateReport(Request $request)
+    {
+        $request->validate([
+            'tanggal_mulai' => 'required|date',
+            'tanggal_akhir' => 'required|date|after_or_equal:tanggal_mulai',
+        ]);
+
+        $tanggalMulai = Carbon::parse($request->tanggal_mulai)->startOfDay();
+        $tanggalAkhir = Carbon::parse($request->tanggal_akhir)->endOfDay();
+
+        // Ambil data donasi yang terverifikasi dalam rentang tanggal
+        $donasis = Donasi::where('status', 'terverifikasi')
+                    ->whereBetween('created_at', [$tanggalMulai, $tanggalAkhir])
+                    ->orderBy('created_at', 'asc')
+                    ->get();
+
+        // Hitung total donasi uang
+        $totalDonasiUang = $donasis->where('metode_donasi', 'uang')->sum('jumlah');
+        
+        // Hitung jumlah donasi per jenis
+        $jumlahPerJenis = $donasis->groupBy('jenis_donasi')
+                            ->map(function ($item) {
+                                return $item->count();
+                            });
+
+        // Hitung jumlah donasi per metode
+        $jumlahPerMetode = $donasis->groupBy('metode_donasi')
+                            ->map(function ($item) {
+                                return $item->count();
+                            });
+
+        $data = [
+            'donasis' => $donasis,
+            'tanggalMulai' => $tanggalMulai,
+            'tanggalAkhir' => $tanggalAkhir,
+            'totalDonasiUang' => $totalDonasiUang,
+            'jumlahPerJenis' => $jumlahPerJenis,
+            'jumlahPerMetode' => $jumlahPerMetode,
+            'tanggalCetak' => Carbon::now(),
+        ];
+
+        $pdf = PDF::loadView('admin.donasi.report', $data);
+        
+        return $pdf->download('laporan-donasi-' . $tanggalMulai->format('d-m-Y') . '-sampai-' . $tanggalAkhir->format('d-m-Y') . '.pdf');
     }
 }

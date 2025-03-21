@@ -183,5 +183,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', AdminMiddleware::cla
     Route::get('/settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
 
+    Route::post('/donasi/report', [App\Http\Controllers\Admin\DonasiController::class, 'generateReport'])->name('donasi.report');
+    
     Route::resource('kegiatan', App\Http\Controllers\Admin\KegiatanController::class);
 });

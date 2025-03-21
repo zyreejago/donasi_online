@@ -2,7 +2,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white py-3 shadow-sm">
         <div class="container">
             <a class="navbar-brand" href="{{ route('landing') }}">
-                <img src="{{ asset('images/logo.png') }}" alt="Yayasan Donasi" height="40">
+                <img src="{{ asset('storage/images/kegiatan/logo.png') }}" alt="Yayasan Donasi" height="40">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>

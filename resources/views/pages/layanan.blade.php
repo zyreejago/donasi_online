@@ -12,9 +12,9 @@
                 <p class="lead mb-4">Berbagai program amal dan kebaikan yang dapat Anda pilih untuk membantu sesama yang membutuhkan.</p>
                 <p class="mb-0">Pilih salah satu layanan di bawah ini untuk mulai berdonasi dan menyebarkan kebaikan.</p>
             </div>
-            <div class="col-lg-6 d-none d-lg-block">
+            {{-- <div class="col-lg-6 d-none d-lg-block">
                 <img src="{{ asset('images/layanan-hero.jpg') }}" alt="Layanan Kami" class="img-fluid rounded-4 shadow">
-            </div>
+            </div> --}}
         </div>
     </div>
 </div>

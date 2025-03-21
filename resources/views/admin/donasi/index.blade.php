@@ -6,6 +6,9 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3">Kelola Donasi</h1>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reportModal">
+            <i class="bi bi-file-earmark-pdf me-1"></i> Rekap Laporan
+        </button>
     </div>
     
     <!-- Filter -->
@@ -49,7 +52,6 @@
                         <tr>
                             <td>{{ $donasi->id }}</td>
                             <td>{{ $donasi->created_at->format('d/m/Y') }}</td>
-                            <td>{{ $donasi->nama_donatur  }}</td>
                             <td>{{ $donasi->nama_donatur }}</td>
                             <td>{{ $donasi->email }}</td>
                             <td>{{ ucfirst($donasi->jenis_donasi) }}</td>
@@ -99,4 +101,39 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Rekap Laporan -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('admin.donasi.report') }}" method="POST" target="_blank">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">Rekap Laporan Donasi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i> Laporan hanya akan menampilkan donasi dengan status <strong>Terverifikasi</strong>.
+                    </div>
+                    <div class="mb-3">
+                        <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
+                        <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tanggal_akhir" class="form-label">Tanggal Akhir</label>
+                        <input type="date" class="form-control" id="tanggal_akhir" name="tanggal_akhir" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-file-earmark-pdf me-1"></i> Generate PDF
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
+

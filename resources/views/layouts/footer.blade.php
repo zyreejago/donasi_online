@@ -14,7 +14,7 @@
     <div class="container">
         <div class="row pb-4">
             <div class="col-lg-4 mb-4 mb-lg-0">
-                <img src="{{ asset('images/logo-white.png') }}" alt="Yayasan Donasi" class="mb-4" height="50">
+                <img src="{{ asset('storage/images/kegiatan/logo.png') }}" alt="Yayasan Donasi" class="mb-4" height="50">
                 <p class="mb-4">Yayasan Donasi adalah organisasi nirlaba yang berfokus pada pendidikan, kesehatan, dan pemberdayaan masyarakat kurang mampu.</p>
                 <div class="d-flex">
                     <a href="#" class="social-icon me-2"><i class="bi bi-facebook"></i></a>
